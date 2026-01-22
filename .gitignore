@@ -1,0 +1,33 @@
+# Environnements virtuels
+venv/
+env/
+.venv/
+.env/
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+__pycache__/
+
+
+# Django migrations (optionnel de les ignorer, mais tu peux garder les fichiers __init__.py)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# JetBrains IDEs (PyCharm, etc.)
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Coverage / Tests
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
