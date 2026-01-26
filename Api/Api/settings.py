@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-we!ve_(&m=7&(j5gxl5j(agt07r6tb**3qbx6$9q==co@ga77c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Pour les tests et développement
 
-ALLOWED_HOSTS = ['192.168.0.115', '192.168.0.106', '127.0.0.1', 'localhost', 'ielecambackend.efg-afroportal.com']  # Ajout testserver pour Django tests
+ALLOWED_HOSTS = ['82.25.95.77', '127.0.0.1', 'localhost']  # Ajout testserver pour Django tests
 
 
 # Application definition
