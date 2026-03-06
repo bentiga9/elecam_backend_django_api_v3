@@ -489,10 +489,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Redis Configuration
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://localhost:6379/1',
+        'BACKEND': 'django_redis.cache.RedisCache',  # django-redis (supporte CLIENT_CLASS)
+        'LOCATION': 'redis://127.0.0.1:6379/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'SOCKET_TIMEOUT': 5,
+            'IGNORE_EXCEPTIONS': True,  # ne pas crasher si Redis est indisponible
         },
         'KEY_PREFIX': 'elecam_cache',
         'TIMEOUT': 300,  # 5 minutes par défaut
@@ -527,7 +530,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',  # Pour l'admin Django
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        # AllowAny par défaut — chaque vue définit ses propres permissions
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -537,7 +541,7 @@ REST_FRAMEWORK = {
 
 # Configuration JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),  # 10 minutes pour les users normaux
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),  # 2 heures (plus raisonnable pour mobile)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,

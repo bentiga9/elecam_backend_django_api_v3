@@ -1,4 +1,5 @@
 from rest_framework import generics, filters
+from rest_framework.permissions import AllowAny, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
@@ -38,6 +39,11 @@ class CandidatListCreateView(generics.ListCreateAPIView):
     ordering_fields = ['name', 'ballot_number', 'created_at']
     ordering = ['ballot_number', 'name']
 
+    def get_permissions(self):
+        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [AllowAny()]
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return CandidatListSerializer
@@ -75,3 +81,8 @@ class CandidatDetailView(generics.RetrieveUpdateDestroyAPIView):
         'election__type', 'partie_politique'
     ).all()
     serializer_class = CandidatSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [AllowAny()]

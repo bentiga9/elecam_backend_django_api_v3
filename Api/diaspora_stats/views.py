@@ -1,5 +1,6 @@
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from django.db.models import Sum, Avg, Count
 from django_filters.rest_framework import DjangoFilterBackend
@@ -29,6 +30,11 @@ class DiasporaStatViewSet(viewsets.ModelViewSet):
     ordering_fields = ['zone', 'inscrits', 'votants', 'taux_participation']
     ordering = ['election', 'zone']
     
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAdminUser()]
+        return [AllowAny()]
+
     def get_serializer_class(self):
         if self.action == 'list':
             return DiasporaStatListSerializer
