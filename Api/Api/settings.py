@@ -5,6 +5,324 @@ Django settings for Api project.
 from pathlib import Path
 from datetime import timedelta
 
+# ============================================================
+# JAZZMIN CONFIGURATION
+# ============================================================
+JAZZMIN_SETTINGS = {
+
+    # ── Titre affiché dans l'onglet du navigateur
+    "site_title": "ELECAM Admin",
+
+    # ── Titre affiché dans la barre de navigation
+    "site_header": "ELECAM",
+
+    # ── Texte de marque dans le menu latéral
+    "site_brand": "🗳️ ELECAM",
+
+    # ── Logo du site (relatif aux fichiers statiques)
+    # "site_logo": "img/logo.png",
+
+    # ── Logo de la page de connexion
+    # "login_logo": "img/logo.png",
+
+    # ── Fond de la page de connexion
+    # "login_logo_dark": "img/logo.png",
+
+    # ── Icône du navigateur (favicon)
+    # "site_icon": "img/favicon.ico",
+
+    # ── Message de bienvenue sur la page de connexion
+    "welcome_sign": "Bienvenue sur l'administration ELECAM",
+
+    # ── Copyright dans le pied de page
+    "copyright": "ELECAM Cameroun © 2025",
+
+    # ── Modèles utilisés pour la recherche globale dans la navbar
+    "search_model": ["user.User", "candidates.Candidat", "elections.Election"],
+
+    # ── Champ de l'avatar utilisateur (None = pas d'avatar)
+    "user_avatar": None,
+
+    # ────────────────────────────────────────────────────────
+    # MENU HAUT (topmenu)
+    # ────────────────────────────────────────────────────────
+    "topmenu_links": [
+        # Lien vers l'accueil de l'admin
+        {"name": "Tableau de bord", "url": "admin:index", "permissions": ["auth.view_user"]},
+        # Lien externe vers la doc API
+        {"name": "📖 API Docs", "url": "/api/docs/", "new_window": True},
+        # Raccourci vers le modèle User
+        {"model": "user.User"},
+    ],
+
+    # ────────────────────────────────────────────────────────
+    # MENU UTILISATEUR (en haut à droite)
+    # ────────────────────────────────────────────────────────
+    "usermenu_links": [
+        {"name": "📖 API Docs", "url": "/api/docs/", "new_window": True},
+        {"model": "user.User"},
+    ],
+
+    # ────────────────────────────────────────────────────────
+    # BARRE LATÉRALE
+    # ────────────────────────────────────────────────────────
+    "show_sidebar": True,
+    "navigation_expanded": True,
+
+    # Apps à cacher complètement du menu
+    "hide_apps": [
+        "authtoken",
+        "token_blacklist",
+        # Ces apps sont regroupées via custom_links sous "elections"
+        "election_types",
+        # Ces apps sont regroupées via custom_links sous "candidate_results"
+        "voter_statistics",
+        "department_stats",
+        "region_stats",
+        "diaspora_stats",
+        # Ces apps sont regroupées via custom_links sous "pickup_point"
+        "voting_office",
+    ],
+
+    # Modèles spécifiques à cacher
+    "hide_models": [],
+
+    # Ordre d'affichage des apps dans le menu latéral
+    "order_with_respect_to": [
+        "auth",
+        "user",
+        "elections",
+        "regions",
+        "departments",
+        "political_parties",
+        "candidates",
+        "candidate_results",
+        "pickup_point",
+        "calendrier_electoral",
+    ],
+
+    # Liens personnalisés dans le menu latéral (par app)
+    "custom_links": {
+        # Ajouter le type d'élection sous Élections
+        "elections": [
+            {
+                "name": "Types d'élection",
+                "url": "admin:election_types_electiontype_changelist",
+                "icon": "fas fa-list-alt",
+                "permissions": ["election_types.view_electiontype"],
+            },
+        ],
+        # Regrouper toutes les statistiques sous Résultats des candidats
+        "candidate_results": [
+            {
+                "name": "Statistiques électorales",
+                "url": "admin:voter_statistics_voterstatistics_changelist",
+                "icon": "fas fa-chart-bar",
+                "permissions": ["voter_statistics.view_voterstatistics"],
+            },
+            {
+                "name": "Statistiques départementales",
+                "url": "admin:department_stats_departmentstat_changelist",
+                "icon": "fas fa-chart-pie",
+                "permissions": ["department_stats.view_departmentstat"],
+            },
+            {
+                "name": "Statistiques régionales",
+                "url": "admin:region_stats_regionstat_changelist",
+                "icon": "fas fa-chart-line",
+                "permissions": ["region_stats.view_regionstat"],
+            },
+            {
+                "name": "Statistiques diaspora",
+                "url": "admin:diaspora_stats_diasporastat_changelist",
+                "icon": "fas fa-globe-africa",
+                "permissions": ["diaspora_stats.view_diasporastat"],
+            },
+        ],
+        # Regrouper bureaux de vote sous Points de retrait
+        "pickup_point": [
+            {
+                "name": "Bureaux de vote",
+                "url": "admin:voting_office_votingoffice_changelist",
+                "icon": "fas fa-building",
+                "permissions": ["voting_office.view_votingoffice"],
+            },
+        ],
+    },
+
+    # ────────────────────────────────────────────────────────
+    # ICÔNES
+    # ────────────────────────────────────────────────────────
+    "icons": {
+        # Authentification
+        "auth":                                             "fas fa-lock",
+        "auth.Group":                                       "fas fa-users-cog",
+
+        # Utilisateurs
+        "user":                                             "fas fa-user-circle",
+        "user.User":                                        "fas fa-user-shield",
+
+        # Élections
+        "elections":                                        "fas fa-vote-yea",
+        "elections.Election":                               "fas fa-vote-yea",
+        "election_types":                                   "fas fa-list-alt",
+        "election_types.ElectionType":                      "fas fa-list-alt",
+
+        # Territoire
+        "regions":                                          "fas fa-map",
+        "regions.Region":                                   "fas fa-map",
+        "departments":                                      "fas fa-map-marker-alt",
+        "departments.Department":                           "fas fa-map-marker-alt",
+
+        # Acteurs politiques
+        "political_parties":                                "fas fa-flag",
+        "political_parties.PartiePolitique":                "fas fa-flag",
+        "candidates":                                       "fas fa-user-tie",
+        "candidates.Candidat":                              "fas fa-user-tie",
+
+        # Statistiques
+        "voter_statistics":                                 "fas fa-chart-bar",
+        "voter_statistics.VoterStatistics":                 "fas fa-chart-bar",
+        "department_stats":                                 "fas fa-chart-pie",
+        "department_stats.DepartmentStat":                  "fas fa-chart-pie",
+        "region_stats":                                     "fas fa-chart-line",
+        "region_stats.RegionStat":                          "fas fa-chart-line",
+        "diaspora_stats":                                   "fas fa-globe-africa",
+        "diaspora_stats.DiasporaStat":                      "fas fa-globe-africa",
+
+        # Résultats des candidats
+        "candidate_results":                                "fas fa-trophy",
+        "candidate_results.CandidateGlobalResult":          "fas fa-trophy",
+        "candidate_results.CandidateRegionResult":          "fas fa-map-marked-alt",
+        "candidate_results.CandidateDepartmentResult":      "fas fa-layer-group",
+        "candidate_results.CandidateDiasporaResult":        "fas fa-plane",
+
+        # Infrastructure
+        "pickup_point":                                     "fas fa-map-pin",
+        "pickup_point.PickupPoint":                         "fas fa-map-pin",
+        "voting_office":                                    "fas fa-building",
+        "voting_office.VotingOffice":                       "fas fa-building",
+        "calendrier_electoral":                             "fas fa-calendar-alt",
+        "calendrier_electoral.CalendrierElectoral":         "fas fa-calendar-alt",
+    },
+
+    # Icône par défaut pour les apps parentes sans icône définie
+    "default_icon_parents": "fas fa-chevron-circle-right",
+
+    # Icône par défaut pour les modèles enfants sans icône définie
+    "default_icon_children": "fas fa-circle",
+
+    # ────────────────────────────────────────────────────────
+    # INTERFACE
+    # ────────────────────────────────────────────────────────
+
+    # Activer les modales pour les relations (ForeignKey, M2M)
+    "related_modal_active": True,
+
+    # Fichiers CSS/JS personnalisés (relatifs aux fichiers statiques)
+    "custom_css": None,
+    "custom_js": None,
+
+    # Utiliser Google Fonts CDN
+    "use_google_fonts_cdn": True,
+
+    # Afficher le bouton UI Builder (pour personnaliser le thème visuellement)
+    "show_ui_builder": True,
+
+    # ────────────────────────────────────────────────────────
+    # FORMAT DES FORMULAIRES
+    # ────────────────────────────────────────────────────────
+
+    # Format par défaut : horizontal_tabs | collapsible | carousel | vertical_tabs
+    "changeform_format": "horizontal_tabs",
+
+    # Surcharge par modèle spécifique
+    "changeform_format_overrides": {
+        "user.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+
+    # Sélecteur de langue
+    "language_chooser": False,
+}
+
+# ────────────────────────────────────────────────────────────
+# JAZZMIN UI TWEAKS — Thème visuel
+# ────────────────────────────────────────────────────────────
+JAZZMIN_UI_TWEAKS = {
+    # Texte réduit dans la navbar
+    "navbar_small_text": False,
+    # Texte réduit dans le footer
+    "footer_small_text": False,
+    # Texte réduit dans le body
+    "body_small_text": False,
+    # Texte réduit pour la marque
+    "brand_small_text": False,
+
+    # Couleur de la marque dans la navbar (navbar-success = vert AdminLTE)
+    "brand_colour": "navbar-success",
+
+    # Couleur d'accentuation (liens actifs, boutons)
+    "accent": "accent-success",
+
+    # Style de la navbar principale : navbar-dark | navbar-white | navbar-light
+    "navbar": "navbar-dark",
+
+    # Supprimer la bordure de la navbar
+    "no_navbar_border": False,
+
+    # Navbar fixe en haut de page
+    "navbar_fixed": True,
+
+    # Layout en boîte (false = pleine largeur)
+    "layout_boxed": False,
+
+    # Footer fixe en bas de page
+    "footer_fixed": False,
+
+    # Sidebar fixe
+    "sidebar_fixed": True,
+
+    # Style de la sidebar : sidebar-dark-success | sidebar-light-success | etc.
+    "sidebar": "sidebar-dark-success",
+
+    # Texte réduit dans la sidebar
+    "sidebar_nav_small_text": False,
+
+    # Désactiver l'expansion des sous-menus
+    "sidebar_disable_expand": False,
+
+    # Indenter les items enfants dans la sidebar
+    "sidebar_nav_child_indent": True,
+
+    # Style compact pour les items de la sidebar
+    "sidebar_nav_compact_style": False,
+
+    # Style legacy de la sidebar
+    "sidebar_nav_legacy_style": False,
+
+    # Style flat de la sidebar
+    "sidebar_nav_flat_style": False,
+
+    # Thème Bootswatch (default, cerulean, cosmo, flatly, journal, litera, lumen, lux,
+    # materia, minty, pulse, sandstone, simplex, sketchy, spacelab, united, yeti)
+    "theme": "default",
+
+    # Thème dark mode (None pour désactiver)
+    "dark_mode_theme": None,
+
+    # Classes des boutons d'action
+    "button_classes": {
+        "primary":   "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
+        "info":      "btn-outline-info",
+        "warning":   "btn-warning",
+        "danger":    "btn-danger",
+        "success":   "btn-success",
+    },
+}
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,9 +330,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-we!ve_(&m=7&(j5gxl5j(agt07r6tb**3qbx6$9q==co@ga77c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Pour les tests et développement
+DEBUG = True  # Pour les tests et développement
 
-ALLOWED_HOSTS = ['82.25.95.77', '127.0.0.1', 'localhost']  # Ajout testserver pour Django tests
+ALLOWED_HOSTS = [ '127.0.0.1', 'localhost']  # Ajout testserver pour Django tests
 
 
 # Application definition
@@ -98,8 +416,21 @@ WSGI_APPLICATION = 'Api.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'elecam_db',
+        'USER': 'macbook2020',
+        'PASSWORD': 'Efg@Afroportal#2025',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+        'CONN_MAX_AGE': 0,
+        'CONN_HEALTH_CHECKS': True,
+        'ATOMIC_REQUESTS': False,
+        'AUTOCOMMIT': True,
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+            'connect_timeout': 10,
+            'options': '-c statement_timeout=30000',
+        },
     }
 }
 
@@ -150,7 +481,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Configuration WhiteNoise pour les fichiers statiques
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
