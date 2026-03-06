@@ -486,6 +486,59 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ============================================================
+# LOGGING CONFIGURATION
+# ============================================================
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} — {message}',
+            'style': '{',
+            'datefmt': '%d/%b/%Y %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # Logs de l'app user (register, login, logout, password reset)
+        'user': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # Logs de toutes les apps métier
+        'candidates': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
+        'candidate_results': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
+        'region_stats': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
+        'department_stats': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
+        'diaspora_stats': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
+        'elections': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
+        # Logs Django généraux (warnings uniquement pour ne pas polluer)
+        'django': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        # Logs des requêtes HTTP Django
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+    # Logger racine — capture tout ce qui n'est pas géré ci-dessus
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
+
 # Redis Configuration
 CACHES = {
     'default': {

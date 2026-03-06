@@ -1,8 +1,11 @@
 # user/utils.py
-from django.core.mail import send_mail
-from django.conf import settings
+import logging
 import random
 import string
+from django.core.mail import send_mail
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 def generate_reset_code():
@@ -41,6 +44,7 @@ L'équipe ELECAM
     """
 
     try:
+        logger.info(f"[EMAIL] Envoi vers {email} depuis {settings.EMAIL_HOST_USER} via {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
         send_mail(
             subject,
             message,
@@ -48,7 +52,8 @@ L'équipe ELECAM
             [email],
             fail_silently=False,
         )
+        logger.info(f"[EMAIL] ✅ Email envoyé avec succès à {email}")
         return True
     except Exception as e:
-        print(f"Erreur lors de l'envoi de l'email: {e}")
+        logger.error(f"[EMAIL] ❌ Erreur envoi email à {email}: {type(e).__name__}: {str(e)}", exc_info=True)
         return False

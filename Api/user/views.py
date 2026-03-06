@@ -1,4 +1,5 @@
 # user/views.py
+import logging
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -9,6 +10,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
+
+logger = logging.getLogger(__name__)
 
 from .serializers import (
     UserRegistrationSerializer,
@@ -59,22 +62,18 @@ class RegisterView(APIView):
         tags=["Authentication"]
     )
     def post(self, request):
+        logger.info(f"[REGISTER] Tentative d'inscription — data: {request.data}")
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            logger.info(f"[REGISTER] ✅ Utilisateur créé: {user.email}")
             
-            # Créer des tokens JWT personnalisés
             refresh = CustomRefreshToken.for_user(user)
             
-            # Gérer les deux cas : admin avec refresh token, utilisateur normal sans refresh
             if isinstance(refresh, dict):
-                # Utilisateur normal - pas de refresh token
-                expires_info = "10 minutes"
-                tokens_data = {
-                    "access": refresh['access']
-                }
+                expires_info = "2 heures"
+                tokens_data = {"access": refresh['access']}
             else:
-                # Admin/Staff - avec refresh token
                 expires_info = "24 heures"
                 tokens_data = {
                     "access": str(refresh.access_token),
@@ -87,6 +86,8 @@ class RegisterView(APIView):
                 "tokens": tokens_data,
                 "expires_in": expires_info
             }, status=status.HTTP_201_CREATED)
+        
+        logger.warning(f"[REGISTER] ❌ Erreurs de validation: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -123,36 +124,33 @@ class LoginView(APIView):
         tags=["Authentication"]
     )
     def post(self, request):
+        logger.info(f"[LOGIN] Tentative de connexion — email: {request.data.get('email', 'N/A')}")
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
             login(request, user)
-            
-            # Créer des tokens JWT personnalisés
+            logger.info(f"[LOGIN] ✅ Connexion réussie: {user.email} (is_staff={user.is_staff})")
+
             refresh = CustomRefreshToken.for_user(user)
-            
-            # Gérer les deux cas : admin avec refresh token, utilisateur normal sans refresh
+
             if isinstance(refresh, dict):
-                # Utilisateur normal - pas de refresh token
-                expires_info = "10 minutes"
-                tokens_data = {
-                    "access": refresh['access']
-                }
+                expires_info = "2 heures"
+                tokens_data = {"access": refresh['access']}
             else:
-                # Admin/Staff - avec refresh token
                 expires_info = "24 heures"
                 tokens_data = {
                     "access": str(refresh.access_token),
                     "refresh": str(refresh)
                 }
-            
+
             return Response({
                 "message": "Connexion réussie",
                 "user": UserProfileSerializer(user).data,
                 "tokens": tokens_data,
                 "expires_in": expires_info
             }, status=status.HTTP_200_OK)
-        
+
+        logger.warning(f"[LOGIN] ❌ Échec connexion — email: {request.data.get('email', 'N/A')} — erreurs: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -227,25 +225,25 @@ def logout_view(request):
     """
     Vue pour déconnecter l'utilisateur en blacklistant le refresh token
     """
+    logger.info(f"[LOGOUT] Tentative — user: {request.user} — refresh présent: {'refresh' in request.data}")
     try:
         refresh_token = request.data.get("refresh")
         if refresh_token:
             token = RefreshToken(refresh_token)
             token.blacklist()
-        
+            logger.info(f"[LOGOUT] ✅ Refresh token blacklisté pour: {request.user}")
+        else:
+            logger.warning(f"[LOGOUT] ⚠️ Pas de refresh token fourni pour: {request.user}")
+
         logout(request)
-        return Response({
-            "message": "Déconnexion réussie"
-        }, status=status.HTTP_200_OK)
-    except TokenError:
-        return Response({
-            "error": "Token invalide"
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Déconnexion réussie"}, status=status.HTTP_200_OK)
+    except TokenError as e:
+        logger.warning(f"[LOGOUT] ❌ Token invalide: {str(e)}")
+        return Response({"error": "Token invalide"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        logger.error(f"[LOGOUT] ❌ Erreur inattendue: {str(e)}", exc_info=True)
         logout(request)
-        return Response({
-            "message": "Déconnexion réussie"
-        }, status=status.HTTP_200_OK)
+        return Response({"message": "Déconnexion réussie"}, status=status.HTTP_200_OK)
 
 
 @extend_schema(
@@ -412,11 +410,14 @@ class RequestPasswordResetView(APIView):
             user.save()
 
             # Envoyer l'email
+            logger.info(f"[PASSWORD_RESET] Envoi du code {reset_code} à {email}")
             if send_reset_code_email(email, reset_code, user.nom):
+                logger.info(f"[PASSWORD_RESET] ✅ Email envoyé à {email}")
                 return Response({
                     "message": "Un code de réinitialisation a été envoyé à votre adresse email"
                 }, status=status.HTTP_200_OK)
             else:
+                logger.error(f"[PASSWORD_RESET] ❌ Échec envoi email à {email}")
                 return Response({
                     "error": "Erreur lors de l'envoi de l'email. Veuillez réessayer plus tard."
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
