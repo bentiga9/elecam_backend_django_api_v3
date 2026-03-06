@@ -332,7 +332,7 @@ SECRET_KEY = 'django-insecure-we!ve_(&m=7&(j5gxl5j(agt07r6tb**3qbx6$9q==co@ga77c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Pour les tests et développement
 
-ALLOWED_HOSTS = [ '82.25.95.77','127.0.0.1', 'localhost']  # Ajout testserver pour Django tests
+ALLOWED_HOSTS = ['82.25.95.77', '127.0.0.1', 'localhost', 'ielecambackend.efg-afroportal.com']  # Ajout testserver pour Django tests
 
 
 # Application definition
@@ -542,10 +542,9 @@ LOGGING = {
 # Redis Configuration
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',  # django-redis (supporte CLIENT_CLASS)
+        'BACKEND': 'django_redis.cache.RedisCache',  # django-redis
         'LOCATION': 'redis://127.0.0.1:6379/1',
         'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'SOCKET_CONNECT_TIMEOUT': 5,
             'SOCKET_TIMEOUT': 5,
             'IGNORE_EXCEPTIONS': True,  # ne pas crasher si Redis est indisponible
@@ -794,7 +793,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ielecam237@gmail.com'
-EMAIL_HOST_PASSWORD = 'tylx gwnr xose rllz'
+EMAIL_HOST_PASSWORD = 'tylxgwnrxoserllz'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # ============================================================
