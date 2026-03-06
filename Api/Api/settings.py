@@ -330,7 +330,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-we!ve_(&m=7&(j5gxl5j(agt07r6tb**3qbx6$9q==co@ga77c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Pour les tests et développement
+DEBUG = False  # Pour les tests et développement
 
 ALLOWED_HOSTS = [ '127.0.0.1', 'localhost']  # Ajout testserver pour Django tests
 
