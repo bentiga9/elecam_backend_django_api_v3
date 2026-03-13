@@ -219,12 +219,12 @@ class VerifyResetCodeSerializer(serializers.Serializer):
     )
     code = serializers.CharField(
         max_length=4,
-        min_length=4,
+        min_length=1,
         help_text="Code à 4 chiffres reçu par email",
         error_messages={
             'required': 'Le code de vérification est obligatoire.',
             'max_length': 'Le code doit contenir exactement 4 chiffres.',
-            'min_length': 'Le code doit contenir exactement 4 chiffres.'
+            'min_length': 'Le code doit contenir entre 1 et 4 chiffres.'
         }
     )
 
@@ -236,7 +236,9 @@ class VerifyResetCodeSerializer(serializers.Serializer):
         """Valider que le code contient uniquement des chiffres"""
         if not value.isdigit():
             raise serializers.ValidationError("Le code doit contenir uniquement des chiffres.")
-        return value
+        if len(value) > 4:
+            raise serializers.ValidationError("Le code doit contenir au maximum 4 chiffres.")
+        return value.zfill(4)
 
 
 class ResetPasswordSerializer(serializers.Serializer):
@@ -250,12 +252,12 @@ class ResetPasswordSerializer(serializers.Serializer):
     )
     code = serializers.CharField(
         max_length=4,
-        min_length=4,
+        min_length=1,
         help_text="Code à 4 chiffres reçu par email",
         error_messages={
             'required': 'Le code de vérification est obligatoire.',
             'max_length': 'Le code doit contenir exactement 4 chiffres.',
-            'min_length': 'Le code doit contenir exactement 4 chiffres.'
+            'min_length': 'Le code doit contenir entre 1 et 4 chiffres.'
         }
     )
     new_password = serializers.CharField(
@@ -276,7 +278,9 @@ class ResetPasswordSerializer(serializers.Serializer):
         """Valider que le code contient uniquement des chiffres"""
         if not value.isdigit():
             raise serializers.ValidationError("Le code doit contenir uniquement des chiffres.")
-        return value
+        if len(value) > 4:
+            raise serializers.ValidationError("Le code doit contenir au maximum 4 chiffres.")
+        return value.zfill(4)
 
     def validate_new_password(self, value):
         """Validation du nouveau mot de passe"""

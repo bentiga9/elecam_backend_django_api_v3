@@ -1,3 +1,6 @@
+import os
+import sys
+
 from django.apps import AppConfig
 
 
@@ -11,5 +14,7 @@ class UtilsConfig(AppConfig):
         Méthode appelée lorsque l'app est prête
         Enregistre automatiquement les signaux de cache
         """
+        if 'runserver' in sys.argv and os.environ.get('RUN_MAIN') != 'true':
+            return
         from .cache_signals import register_cache_signals
         register_cache_signals()

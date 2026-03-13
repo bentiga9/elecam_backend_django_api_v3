@@ -6,6 +6,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Flag pour éviter l'enregistrement multiple des signaux
+_SIGNALS_REGISTERED = False
+
 class CacheInvalidationSignals:
     """
     Gestionnaire des signaux pour invalidation automatique du cache
@@ -30,7 +33,7 @@ class CacheInvalidationSignals:
                 app_config = apps.get_app_config(app_name)
                 for model in app_config.get_models():
                     CacheInvalidationSignals.register_model_signals(model)
-                logger.info(f"Signaux de cache enregistrés pour l'app: {app_name}")
+                logger.debug(f"Signaux de cache enregistrés pour l'app: {app_name}")
             except Exception as e:
                 logger.warning(f"Impossible d'enregistrer les signaux pour {app_name}: {e}")
 
@@ -40,12 +43,12 @@ class CacheInvalidationSignals:
         Enregistre les signaux pour un modèle spécifique
         """
         # Signal après sauvegarde
-        @receiver(post_save, sender=model_class)
+        @receiver(post_save, sender=model_class, dispatch_uid=f'cache_invalidate_on_save_{model_class.__name__}')
         def invalidate_on_save(sender, instance, created, **kwargs):
             CacheInvalidationSignals.handle_model_change(sender, instance, 'save', created)
 
         # Signal après suppression
-        @receiver(post_delete, sender=model_class)
+        @receiver(post_delete, sender=model_class, dispatch_uid=f'cache_invalidate_on_delete_{model_class.__name__}')
         def invalidate_on_delete(sender, instance, **kwargs):
             CacheInvalidationSignals.handle_model_change(sender, instance, 'delete')
 
@@ -115,5 +118,11 @@ def register_cache_signals():
     """
     Fonction à appeler pour enregistrer tous les signaux de cache
     """
+    global _SIGNALS_REGISTERED
+    
+    if _SIGNALS_REGISTERED:
+        return
+    
     CacheInvalidationSignals.register_all_models()
-    logger.info("Tous les signaux de cache ont été enregistrés")
+    _SIGNALS_REGISTERED = True
+    logger.debug("Tous les signaux de cache ont été enregistrés")

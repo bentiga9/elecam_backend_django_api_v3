@@ -49,9 +49,9 @@ class ElectionListCreateAPIView(generics.ListCreateAPIView):
     ordering = ['-date']
     permission_classes = [AdminWriteOnlyPermission]
 
-    # @cache_view_response(timeout=600, vary_on_user=False)  # Cache désactivé temporairement
+    @cache_view_response(timeout=600, vary_on_user=False)  # Cache pour 10 minutes
     def list(self, request, *args, **kwargs):
-        """Liste des élections (cache désactivé temporairement)"""
+        """Liste des élections avec cache Redis (10 min)"""
         return super().list(request, *args, **kwargs)
 
     def get_queryset(self):

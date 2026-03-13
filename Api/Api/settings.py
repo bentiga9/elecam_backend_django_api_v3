@@ -4,6 +4,8 @@ Django settings for Api project.
 
 from pathlib import Path
 from datetime import timedelta
+import ssl
+import certifi
 
 # ============================================================
 # JAZZMIN CONFIGURATION
@@ -42,7 +44,7 @@ JAZZMIN_SETTINGS = {
 
     # ── Champ de l'avatar utilisateur (None = pas d'avatar)
     "user_avatar": None,
-
+    
     # ────────────────────────────────────────────────────────
     # MENU HAUT (topmenu)
     # ────────────────────────────────────────────────────────
@@ -223,11 +225,11 @@ JAZZMIN_SETTINGS = {
     "custom_css": None,
     "custom_js": None,
 
-    # Utiliser Google Fonts CDN
-    "use_google_fonts_cdn": True,
+    # Utiliser Google Fonts CDN (False pour éviter les problèmes de chargement)
+    "use_google_fonts_cdn": False,
 
     # Afficher le bouton UI Builder (pour personnaliser le thème visuellement)
-    "show_ui_builder": True,
+    "show_ui_builder": False,
 
     # ────────────────────────────────────────────────────────
     # FORMAT DES FORMULAIRES
@@ -259,14 +261,14 @@ JAZZMIN_UI_TWEAKS = {
     # Texte réduit pour la marque
     "brand_small_text": False,
 
-    # Couleur de la marque dans la navbar (navbar-success = vert AdminLTE)
-    "brand_colour": "navbar-success",
+    # Couleur de la marque dans la navbar (navbar-white pour design clair)
+    "brand_colour": "navbar-white",
 
-    # Couleur d'accentuation (liens actifs, boutons)
-    "accent": "accent-success",
+    # Couleur d'accentuation (liens actifs, boutons) - info pour douceur visuelle
+    "accent": "accent-info",
 
-    # Style de la navbar principale : navbar-dark | navbar-white | navbar-light
-    "navbar": "navbar-dark",
+    # Style de la navbar principale : navbar-white pour design clair et reposant
+    "navbar": "navbar-white navbar-light",
 
     # Supprimer la bordure de la navbar
     "no_navbar_border": False,
@@ -283,8 +285,8 @@ JAZZMIN_UI_TWEAKS = {
     # Sidebar fixe
     "sidebar_fixed": True,
 
-    # Style de la sidebar : sidebar-dark-success | sidebar-light-success | etc.
-    "sidebar": "sidebar-dark-success",
+    # Style de la sidebar : sidebar-light-info pour design clair et apaisant
+    "sidebar": "sidebar-light-info",
 
     # Texte réduit dans la sidebar
     "sidebar_nav_small_text": False,
@@ -304,20 +306,19 @@ JAZZMIN_UI_TWEAKS = {
     # Style flat de la sidebar
     "sidebar_nav_flat_style": False,
 
-    # Thème Bootswatch (default, cerulean, cosmo, flatly, journal, litera, lumen, lux,
-    # materia, minty, pulse, sandstone, simplex, sketchy, spacelab, united, yeti)
-    "theme": "default",
+    # Thème Bootswatch : cosmo (moderne, clair, doux pour les yeux)
+    "theme": "cosmo",
 
     # Thème dark mode (None pour désactiver)
     "dark_mode_theme": None,
 
-    # Classes des boutons d'action
+    # Classes des boutons d'action (outline pour design léger et aéré)
     "button_classes": {
         "primary":   "btn-outline-primary",
         "secondary": "btn-outline-secondary",
-        "info":      "btn-outline-info",
-        "warning":   "btn-warning",
-        "danger":    "btn-danger",
+        "info":      "btn-info",
+        "warning":   "btn-outline-warning",
+        "danger":    "btn-outline-danger",
         "success":   "btn-success",
     },
 }
@@ -332,7 +333,7 @@ SECRET_KEY = 'django-insecure-we!ve_(&m=7&(j5gxl5j(agt07r6tb**3qbx6$9q==co@ga77c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Pour les tests et développement
 
-ALLOWED_HOSTS = ['82.25.95.77', '127.0.0.1', 'localhost', 'ielecambackend.efg-afroportal.com']  # Ajout testserver pour Django tests
+ALLOWED_HOSTS = ['82.25.95.77', '127.0.0.1', 'localhost', '192.168.0.112']
 
 
 # Application definition
@@ -481,7 +482,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Configuration WhiteNoise pour les fichiers statiques
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -550,7 +551,7 @@ CACHES = {
             'IGNORE_EXCEPTIONS': True,  # ne pas crasher si Redis est indisponible
         },
         'KEY_PREFIX': 'elecam_cache',
-        'TIMEOUT': 300,  # 5 minutes par défaut
+        'TIMEOUT': 600,  # 10 minutes par défaut
     }
 }
 
@@ -782,16 +783,11 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Configuration Email
-# Pour le développement/test, utilisez le backend console qui affiche les emails dans la console
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_HOST_USER = 'noreply@elecam.com'
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-# Configuration Gmail pour l'envoi réel d'emails
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'Api.email_backend.CustomEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'ielecam237@gmail.com'
 EMAIL_HOST_PASSWORD = 'tylx gwnr xose rllz'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
