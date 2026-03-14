@@ -38,9 +38,8 @@ class VoterStatisticsListCreateAPIView(generics.ListCreateAPIView):
     ordering = ['-created_at']
     permission_classes = [AdminWriteOnlyPermission]
 
-    @cache_view_response(timeout=600, vary_on_user=False)  # Cache 10 minutes
     def list(self, request, *args, **kwargs):
-        """Liste avec cache Redis des réponses"""
+        """Liste SANS cache - données toujours fraîches"""
         return super().list(request, *args, **kwargs)
 
     def get_serializer_class(self):

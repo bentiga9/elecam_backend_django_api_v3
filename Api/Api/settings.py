@@ -540,18 +540,12 @@ LOGGING = {
     },
 }
 
-# Redis Configuration
+# Cache Configuration - DÉSACTIVÉ pour debug
+# Utilisation d'un cache dummy en mémoire (pas de persistance)
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',  # django-redis
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'SOCKET_CONNECT_TIMEOUT': 5,
-            'SOCKET_TIMEOUT': 5,
-            'IGNORE_EXCEPTIONS': True,  # ne pas crasher si Redis est indisponible
-        },
-        'KEY_PREFIX': 'elecam_cache',
-        'TIMEOUT': 600,  # 10 minutes par défaut
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',  # Pas de cache du tout
+        # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # Alternative: cache en mémoire seulement
     }
 }
 
@@ -789,7 +783,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'ielecam237@gmail.com'
-EMAIL_HOST_PASSWORD = 'tylx gwnr xose rllz'
+EMAIL_HOST_PASSWORD = 'rbob wryp ctrh rwid'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # ============================================================

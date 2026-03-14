@@ -36,8 +36,8 @@ class CandidatListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['election', 'partie_politique', 'is_active']
     search_fields = ['name']
-    ordering_fields = ['name', 'ballot_number', 'created_at']
-    ordering = ['ballot_number', 'name']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['name']
 
     def get_permissions(self):
         if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:

@@ -49,9 +49,8 @@ class ElectionListCreateAPIView(generics.ListCreateAPIView):
     ordering = ['-date']
     permission_classes = [AdminWriteOnlyPermission]
 
-    @cache_view_response(timeout=600, vary_on_user=False)  # Cache pour 10 minutes
     def list(self, request, *args, **kwargs):
-        """Liste des élections avec cache Redis (10 min)"""
+        """Liste des élections SANS cache (définitif)"""
         return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -59,13 +58,22 @@ class ElectionListCreateAPIView(generics.ListCreateAPIView):
         Filtrage personnalisé :
         - date_filter: 'future', 'past', 'today'
         - active_only: 'true'
+        - status: 'pending', 'ongoing', 'completed' (prioritaire sur le filtre Django)
         """
         print(f"🗄️  LECTURE BD: Requête PostgreSQL pour les élections")
         queryset = super().get_queryset()
         date_filter = self.request.query_params.get('date_filter')
         active_only = self.request.query_params.get('active_only')
+        status = self.request.query_params.get('status')
 
         today = timezone.now().date()
+
+        # Filtre par statut (prioritaire sur le filtre Django pour éviter les bugs de cache)
+        if status:
+            valid_statuses = ['pending', 'ongoing', 'completed']
+            if status in valid_statuses:
+                queryset = queryset.filter(status=status)
+                print(f"🔍 Filtre statut appliqué: {status}")
 
         if date_filter == 'future':
             queryset = queryset.filter(date__gt=today)
@@ -141,7 +149,6 @@ class ElectionDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 )
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])  # Autoriser l'accès sans authentification
-@cache_view_response(timeout=600, vary_on_user=False)  # Cache pour 10 minutes
 def election_statistics(request):
     """
     Statistiques sur les élections.
