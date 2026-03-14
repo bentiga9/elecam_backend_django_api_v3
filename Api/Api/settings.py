@@ -309,8 +309,8 @@ JAZZMIN_UI_TWEAKS = {
     # Thème Bootswatch : cosmo (moderne, clair, doux pour les yeux)
     "theme": "cosmo",
 
-    # Thème dark mode (None pour désactiver)
-    "dark_mode_theme": None,
+    # Mode de thème par défaut : 'light', 'dark' ou 'auto'
+    "default_theme_mode": "light",
 
     # Classes des boutons d'action (outline pour design léger et aéré)
     "button_classes": {
@@ -333,7 +333,12 @@ SECRET_KEY = 'django-insecure-we!ve_(&m=7&(j5gxl5j(agt07r6tb**3qbx6$9q==co@ga77c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Pour les tests et développement
 
-ALLOWED_HOSTS = ['82.25.95.77', '127.0.0.1', 'localhost', '192.168.0.112']
+ALLOWED_HOSTS = [
+    'localhost',
+    '192.168.0.112',
+    'ielecam.online',
+    '*',  # Développement local — retirer en production
+]
 
 
 # Application definition
