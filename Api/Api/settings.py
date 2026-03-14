@@ -335,9 +335,18 @@ DEBUG = False  # Pour les tests et développement
 
 ALLOWED_HOSTS = [
     'localhost',
+    '127.0.0.1',
     '192.168.0.112',
     'ielecam.online',
-    '*',  # Développement local — retirer en production
+    'www.ielecam.online',
+    '82.25.95.77',  # IP du serveur de production
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://ielecam.online',
+    'https://www.ielecam.online',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
 
@@ -749,7 +758,7 @@ Incluez le token dans le header: `Authorization: Bearer <token>`
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
-    "http://192.168.0.106:4200",
+    "https://ielecam.online",
 ]
 
 # Pour le développement, vous pouvez utiliser :
